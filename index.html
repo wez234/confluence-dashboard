@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Confluence — Multi-Utility Real-Time Analytics Platform</title>
+<meta name="description" content="Real-time analytics dashboard for electricity, gas and water smart meter networks with explainable AI anomaly detection." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@700,500&f[]=satoshi@400,500,700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230c7a82'/%3E%3Cpath d='M7 20 L13 12 L17 17 L25 8' stroke='white' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='25' cy='8' r='2.4' fill='white'/%3E%3C/svg%3E" />
+
+<link rel="stylesheet" href="./base.css" />
+<link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+
+<div class="dashboard">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar" aria-label="Primary navigation">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <path d="M4 24 C 4 24, 10 8, 16 16 C 22 24, 28 8, 28 8" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" fill="none" opacity="0.35"/>
+        <path d="M4 24 L11 13 L16 19 L28 6" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <circle cx="28" cy="6" r="2.6" fill="currentColor"/>
+      </svg>
+      <div>
+        <span class="brand-name">Confluence</span>
+        <span class="brand-tag">Utility Analytics</span>
+      </div>
+    </div>
+
+    <nav>
+      <div class="nav-list" role="list">
+        <button class="nav-link" data-view="overview" aria-current="page">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+          Overview
+        </button>
+        <button class="nav-link" data-view="utilities">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h6l-1 8 10-12h-6l1-8z"/></svg>
+          Utilities
+        </button>
+        <button class="nav-link" data-view="alerts">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+          Alerts &amp; XAI
+          <span class="nav-badge" id="alert-nav-badge">0</span>
+        </button>
+        <button class="nav-link" data-view="models">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18.7 8 14 12.7l-3-3L7 13.7"/></svg>
+          Model Comparison
+        </button>
+        <button class="nav-link" data-view="architecture">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+          Architecture
+        </button>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="system-status">
+        <span class="pulse-dot" aria-hidden="true"></span>
+        <span>Streaming pipeline nominal</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============ HEADER ============ -->
+  <header class="header">
+    <div>
+      <h1 class="header-title" id="page-title">Overview</h1>
+      <p class="header-subtitle" id="page-subtitle">Live electricity, gas &amp; water network monitoring</p>
+    </div>
+    <div class="header-actions">
+      <div class="updated-chip">
+        <span class="pulse-dot" aria-hidden="true" style="animation:none;"></span>
+        <span id="last-updated">updated 0s ago</span>
+      </div>
+      <button class="icon-btn" id="theme-toggle" data-theme-toggle aria-label="Switch to light mode">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ============ MAIN ============ -->
+  <main class="main">
+
+    <!-- ================= OVERVIEW ================= -->
+    <section class="view is-active" id="view-overview">
+
+      <div class="kpi-grid" id="kpi-grid"><!-- injected --></div>
+
+      <div>
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">Live consumption streams</h2>
+            <p class="section-desc">15-min electricity · hourly gas · variable-interval water — normalised to a common timestamp axis</p>
+          </div>
+        </div>
+        <div class="chart-grid" style="margin-top: var(--space-4);" id="overview-charts"><!-- injected --></div>
+      </div>
+
+      <div>
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">Recent alerts</h2>
+            <p class="section-desc">Latest anomalies flagged by the detection layer</p>
+          </div>
+          <button class="section-link" data-goto="alerts">View all &amp; explainability →</button>
+        </div>
+        <div class="card" style="margin-top: var(--space-4);">
+          <div class="alert-list" id="overview-alert-list" style="max-height:280px;"><!-- injected --></div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ================= UTILITIES ================= -->
+    <section class="view" id="view-utilities">
+      <div class="section-head">
+        <div>
+          <h2 class="section-title">Utility detail</h2>
+          <p class="section-desc">Per-network consumption history with anomaly markers</p>
+        </div>
+        <div class="range-toggle" id="range-toggle" role="group" aria-label="Time range">
+          <button data-range="live" aria-pressed="true">LIVE</button>
+          <button data-range="24h" aria-pressed="false">24H</button>
+          <button data-range="7d" aria-pressed="false">7D</button>
+        </div>
+      </div>
+
+      <div id="utility-detail-cards" style="display:flex; flex-direction:column; gap: var(--space-4);"><!-- injected --></div>
+    </section>
+
+    <!-- ================= ALERTS & XAI ================= -->
+    <section class="view" id="view-alerts">
+      <div class="section-head">
+        <div>
+          <h2 class="section-title">Alerts &amp; explainability</h2>
+          <p class="section-desc">Select an alert to inspect its SHAP-style feature contributions</p>
+        </div>
+      </div>
+
+      <div class="alerts-panel">
+        <div class="card">
+          <div class="alert-list" id="full-alert-list"><!-- injected --></div>
+        </div>
+
+        <div class="card xai-panel" id="xai-panel"><!-- injected --></div>
+      </div>
+    </section>
+
+    <!-- ================= MODEL COMPARISON ================= -->
+    <section class="view" id="view-models">
+      <div class="section-head">
+        <div>
+          <h2 class="section-title">Anomaly detection technique comparison</h2>
+          <p class="section-desc">Statistical, machine-learning &amp; deep-learning approaches evaluated on the same simulated streams</p>
+        </div>
+      </div>
+
+      <div class="card table-card">
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>Technique</th>
+              <th>Precision</th>
+              <th>Recall</th>
+              <th>F1-score</th>
+              <th>ROC-AUC</th>
+              <th>Avg latency</th>
+              <th>Interpretability</th>
+            </tr>
+          </thead>
+          <tbody id="model-table-body"><!-- injected --></tbody>
+        </table>
+      </div>
+
+      <div class="chart-grid model-charts-grid">
+        <div class="card chart-card">
+          <div class="chart-card-head">
+            <span class="chart-card-title">Detection accuracy by technique</span>
+          </div>
+          <div class="chart-canvas-wrap large"><canvas id="model-accuracy-chart"></canvas></div>
+        </div>
+        <div class="card chart-card">
+          <div class="chart-card-head">
+            <span class="chart-card-title">Alert latency vs. 2.5s target</span>
+          </div>
+          <div class="chart-canvas-wrap large"><canvas id="model-latency-chart"></canvas></div>
+        </div>
+      </div>
+
+      <div class="info-banner">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+        <div>
+          <strong>H1 / H2 check:</strong> the LSTM autoencoder achieves the highest recall of the three techniques, and end-to-end alert latency stays below the 2.5s target across all methods — consistent with the proposal's evaluation hypotheses.
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= ARCHITECTURE ================= -->
+    <section class="view" id="view-architecture">
+      <div class="section-head">
+        <div>
+          <h2 class="section-title">Platform architecture</h2>
+          <p class="section-desc">Five integrated layers — this dashboard implements the visualisation layer</p>
+        </div>
+      </div>
+
+      <div class="arch-flow" id="arch-flow"><!-- injected --></div>
+
+      <div class="info-banner">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+        <div>
+          This prototype simulates the ingestion → storage → detection pipeline client-side to demonstrate the visualisation layer end-to-end. Wiring it to live Kafka topics and TimescaleDB queries is the next implementation milestone.
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3"></script>
+<script src="./app.js"></script>
+</body>
+</html>

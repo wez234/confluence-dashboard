@@ -2,3 +2,11 @@
 node_modules/
 *.log
 .vscode/
+__pycache__/
+*.pyc
+.pytest_cache/
+.env
+reports/audit_log.jsonl
+reports/study/
+data/sgcc/
+data/lcl/

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="180" height="36" viewBox="0 0 180 36" fill="none" aria-label="Confluence">
+<path d="M4 9 C12 9, 14 18, 16 18" stroke="#C27C0E" stroke-width="2.8" stroke-linecap="round"/>
+<path d="M4 18 L16 18" stroke="#2F5FB3" stroke-width="2.8" stroke-linecap="round"/>
+<path d="M4 27 C12 27, 14 18, 16 18" stroke="#0E8A8A" stroke-width="2.8" stroke-linecap="round"/>
+<path d="M16 18 L28 18" stroke="#1D2327" stroke-width="3.4" stroke-linecap="round"/>
+<circle cx="29" cy="18" r="2.6" fill="#B3261E"/>
+<text x="40" y="24" font-family="Inter, Helvetica, Arial, sans-serif" font-size="18" font-weight="700" fill="#1D2327">Confluence</text>
+</svg>

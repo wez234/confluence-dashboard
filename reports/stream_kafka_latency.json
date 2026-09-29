@@ -1,0 +1,23 @@
+{
+  "readings": 3968,
+  "alerts": 205,
+  "span_s": 100.66280388832092,
+  "throughput_readings_per_s": 39.41873111742692,
+  "e2e_mean_s": 0.6941264495253563,
+  "e2e_p50_s": 0.7389006614685059,
+  "e2e_p95_s": 1.2813982486724853,
+  "e2e_p99_s": 1.3550916481018063,
+  "e2e_max_s": 1.5552420616149902,
+  "alert_e2e_mean_s": 0.5420215746251548,
+  "alert_e2e_p95_s": 1.1403701782226554,
+  "decision_mean_s": 0.6897202391297587,
+  "share_under_target": 1.0,
+  "target_s": 2.5,
+  "H2_supported": true,
+  "environment": {
+    "cpus": 2,
+    "ram_gb": 7.8,
+    "python": "3.14.3"
+  },
+  "note": "Apache Kafka 3.9.1 (KRaft, single broker) + PostgreSQL 16.4 without the TimescaleDB extension, producer at 1800x real time, 1 simulated test day + 26h warm-up, consumer micro-batches up to 200 records, all on one 2-vCPU / 7 GB sandbox"
+}

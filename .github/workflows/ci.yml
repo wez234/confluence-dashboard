@@ -1,0 +1,21 @@
+name: CI
+on:
+  push: {branches: [main]}
+  pull_request:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12", cache: pip}
+      - name: Install
+        run: |
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+          pip install -r requirements.txt
+      - name: Tests
+        env: {PYTHONPATH: src, DATA_MODE: demo}
+        run: python -m pytest -q
+      - name: Dashboard imports
+        env: {PYTHONPATH: src, DATA_MODE: demo}
+        run: python -c "import sys; sys.path.insert(0,'dashboard'); import core; print(core.__name__)"

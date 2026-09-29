@@ -1,62 +1,51 @@
-# Confluence — Multi-Utility Analytics Dashboard
+# Confluence: real-time multi-utility analytics with explainable anomaly detection
 
-Confluence is the **Visualisation Layer** prototype for the *"Real-Time Multi-Utility Analytics with Explainable Anomaly Detection"* dissertation project. It is a client-side simulation of a live electricity / gas / water monitoring platform, built to demonstrate the dashboard's UX, alerting logic, and explainability panels described in the proposal's five-layer architecture — without requiring the backend (Kafka, TimescaleDB, ML services) to be running.
+This is the software artefact for the 7CS077 dissertation *Real-Time Multi-Utility Analytics Platform with Explainable Anomaly Detection* (Design Science Research). It ingests electricity (15-minute), gas (hourly) and water (irregular) smart-meter streams through Apache Kafka and stores them in TimescaleDB/PostgreSQL. Each reading is scored by five detectors and an ensemble, and every alert is explained with SHAP, LIME and a plain-language narrative in a Streamlit dashboard.
 
-**Live demo:** deployed via GitHub Pages — see the repository's **About** section for the current URL once Pages is enabled.
+![architecture](docs/architecture.png)
 
-## What it demonstrates
+## What is in the repository
 
-| Dissertation concept | Where it lives in this app |
+| Path | Contents |
 |---|---|
-| Live multi-utility monitoring (electricity 15-min, gas hourly, water variable-interval) | `Overview` and `Utilities` views — simulated diurnal consumption curves with Gaussian noise |
-| Anomaly detection (rolling z-score on residuals) | `app.js` `tickUtility()` — flags points where the residual from the expected baseline exceeds a z-score threshold |
-| Explainable AI (SHAP/LIME-style attribution) | `Alerts & XAI` view — clicking an alert renders a per-feature contribution breakdown (consumption deviation, rate of change, time-of-day deviation, historical volatility, cross-meter correlation) |
-| Evaluation framework (Precision / Recall / F1 / ROC-AUC, latency vs. 2.5s target) | `Model Comparison` view — Z-score vs. Isolation Forest vs. LSTM Autoencoder+SHAP, with an annotated 2.5s latency threshold line |
-| Five-layer platform architecture | `Architecture` view — Data Sources → Ingestion → Storage → Detection → Visualisation, with "you are here" on the Visualisation layer |
+| `src/confluence/data` | Synthetic multi-utility generator with labelled anomalies; SGCC and London (UK) smart-meter adapters |
+| `src/confluence/ingestion` | Kafka producer and consumer; validation, cleaning, UTC normalisation, causal features, micro-batch stream processor |
+| `src/confluence/storage` | TimescaleDB schema (hypertables, continuous aggregate, compression, retention, roles, audit tables) |
+| `src/confluence/detection` | Z-score, moving average, Isolation Forest, One-Class SVM, LSTM autoencoder (PyTorch), weighted ensemble |
+| `src/confluence/explain` | TreeSHAP, KernelSHAP, LIME, narratives |
+| `src/confluence/alerts` | Severity, debounce, escalation, cross-utility co-occurrence |
+| `src/confluence/api` | FastAPI REST layer |
+| `src/confluence/evaluation` | One-command evaluation (H1/H2/XAI), Kafka latency analysis, user-study analysis (H3) |
+| `dashboard/` | Streamlit dashboard: monitoring, historical, cross-utility, alerts, model performance, XAI, user study, about and ethics |
+| `prototype/` | Early HTML design prototype, **simulated values only** (served by GitHub Pages) |
+| `docs/` | [Requirements and traceability](docs/REQUIREMENTS.md) · [Architecture](docs/ARCHITECTURE.md) · [Evaluation](docs/EVALUATION.md) · [Experiments](docs/EXPERIMENTS.md) · [User study](docs/USER_STUDY.md) · [Deployment and UK recommendations](docs/DEPLOYMENT.md) |
 
-## Tech stack
-
-![Tools and technology stack used in Confluence, showing implemented components (structure & styling, data visualisation, typography, dev & QA, version control & hosting) versus the dissertation's target platform architecture (data sources, ingestion, storage, detection) that is not yet wired up](docs/tools-diagram.svg)
-
-Summary:
-
-- **Structure & logic:** HTML5, CSS3 (custom properties, CSS Grid/Flexbox, light & dark themes), vanilla JavaScript (ES2020+, no framework, no build step)
-- **Data visualisation:** [Chart.js](https://www.chartjs.org/) v4 + [chartjs-plugin-annotation](https://github.com/chartjs/chartjs-plugin-annotation) for the latency-threshold line
-- **Typography:** [Fontshare](https://www.fontshare.com/) (Cabinet Grotesk, Satoshi) + [Google Fonts](https://fonts.google.com/) (JetBrains Mono)
-- **Tooling:** Git/GitHub for version control, Playwright for visual QA during development, GitHub Pages for static hosting
-
-No backend, database, or API keys are required — all data is generated client-side in `app.js` to model realistic diurnal utility-consumption patterns and inject anomalies at a controlled rate.
-
-## Running locally
-
-This is a static site with no build step.
+## Quick start
 
 ```bash
-git clone <this-repo-url>
-cd confluence-dashboard
-python3 -m http.server 8000
-# open http://localhost:8000
+# dashboard only (demo mode, uses committed artifacts)
+pip install -r dashboard/requirements.txt
+streamlit run dashboard/app.py
+
+# full rebuild of every model and number
+make install && make evaluate && make test
+
+# full streaming stack
+cp .env.example .env && docker compose up --build
 ```
 
-Any static file server works (`npx serve`, VS Code Live Server, etc.) — the app just needs `index.html`, `style.css`, `base.css`, and `app.js` served together.
+## Results so far (synthetic data, test period)
 
-## Project structure
+| Question | Result |
+|---|---|
+| RQ2: best balance | The ensemble has the highest ROC-AUC (0.940 ± 0.008 over 3 seeds) and 88.6% event recall. The LSTM has the best single-run F1 (0.580) but is the least stable. |
+| H1: LSTM ≥ 15% higher temporal recall | **Not supported.** The LSTM misses the +15% margin over Z-score in all 6 seed and basis combinations, and Z-score is outright higher in 4 of them. |
+| H2: mean alert latency < 2.5 s | **Supported.** Kafka and PostgreSQL run: 0.69 s mean, 1.28 s p95, 100% of readings under 2.5 s. |
+| XAI plausibility | Top SHAP factor matches the anomaly type's expected driver in 78.6% of cases (chance ≈ 24%). TreeSHAP takes 3.2 ms per alert. |
+| H3, SUS, TAM | **Pending participants.** The study instrument and analysis are built and tested. |
 
-```
-confluence-dashboard/
-├── index.html      # Page shell, sidebar nav, 5 views (Overview, Utilities, Alerts & XAI, Model Comparison, Architecture)
-├── style.css        # Design tokens, light/dark themes, component styles, responsive layout (incl. mobile bottom nav)
-├── base.css         # Base reset / typography scale
-├── app.js           # Data simulation, anomaly detection, alert + XAI generation, Chart.js wiring
-├── assets/          # (reserved for static assets)
-└── docs/
-    └── tools-diagram.svg
-```
+Full details, limitations and threats to validity are in [docs/EVALUATION.md](docs/EVALUATION.md). The numbers come from synthetic data with injected anomalies. They rank the methods, but they do not predict field performance.
 
-## Deployment
+## Ethics
 
-The site is deployed via **GitHub Pages** directly from the repository — no build pipeline needed since it's static HTML/CSS/JS. To redeploy after edits, just push to `main`; Pages picks up the change automatically.
-
-## Roadmap (per the dissertation's implementation milestone)
-
-This prototype simulates the ingestion → storage → detection pipeline client-side to demonstrate the Visualisation Layer end-to-end. Wiring it to live Kafka topics, a TimescaleDB-backed API, and real SHAP/LIME output from the trained detection models is the next implementation milestone.
+The platform uses public or synthetic data only, with no personal information. It is monitoring only: thresholds change only through an operator, and every change and alert action is written to an audit log. Study participants give informed consent and are identified only by a random code.

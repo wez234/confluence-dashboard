@@ -1,0 +1,158 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1480" height="1030" viewBox="0 0 1480 1030">
+<rect width="1480" height="1030" fill="#FFFFFF"/>
+<defs><marker id="a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L9 5L1 9z" fill="#5A6B78"/></marker></defs>
+<text x="40" y="44" font-family="Inter, Helvetica, Arial, sans-serif" font-size="22" font-weight="700" fill="#1D2327" text-anchor="start">Confluence — as-built architecture (mapped to Figure 1 of the proposal)</text>
+<text x="40" y="68" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#5A6B78" text-anchor="start">Kappa architecture: one streaming path for live detection and historical replay. Module paths are relative to src/confluence/.</text>
+<rect x="40" y="90" width="1180" height="128" rx="8" fill="#1F5AA6" fill-opacity="0.06" stroke="#1F5AA6" stroke-width="1.2"/>
+<rect x="40" y="90" width="170" height="128" rx="8" fill="#1F5AA6"/>
+<text x="56" y="152.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="start">1.</text>
+<text x="56" y="171.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="start">DATA SOURCES</text>
+<rect x="226.0" y="102" width="318.0" height="104" rx="6" fill="#FFFFFF" stroke="#1F5AA6" stroke-opacity="0.55"/>
+<text x="385.0" y="128" font-family="Inter, Helvetica, Arial, sans-serif" font-size="14" font-weight="650" fill="#1F5AA6" text-anchor="middle">Electricity smart meters</text>
+<text x="385.0" y="150" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#3A4449" text-anchor="middle">15-min kWh · synthetic UK profile</text>
+<text x="385.0" y="168" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#6B7378" text-anchor="middle">or SGCC adapter (data/sgcc.py)</text>
+<rect x="556.0" y="102" width="318.0" height="104" rx="6" fill="#FFFFFF" stroke="#1F5AA6" stroke-opacity="0.55"/>
+<text x="715.0" y="128" font-family="Inter, Helvetica, Arial, sans-serif" font-size="14" font-weight="650" fill="#1F5AA6" text-anchor="middle">Gas smart meters</text>
+<text x="715.0" y="150" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#3A4449" text-anchor="middle">hourly m3 · heating pattern</text>
+<text x="715.0" y="168" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#6B7378" text-anchor="middle">data/generator.py</text>
+<rect x="886.0" y="102" width="318.0" height="104" rx="6" fill="#FFFFFF" stroke="#1F5AA6" stroke-opacity="0.55"/>
+<text x="1045.0" y="128" font-family="Inter, Helvetica, Arial, sans-serif" font-size="14" font-weight="650" fill="#1F5AA6" text-anchor="middle">Water meters</text>
+<text x="1045.0" y="150" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#3A4449" text-anchor="middle">irregular 5-30 min L/min</text>
+<text x="1045.0" y="168" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#6B7378" text-anchor="middle">UK local time (DST test)</text>
+<line x1="715.0" y1="220" x2="715.0" y2="238" stroke="#5A6B78" stroke-width="2" marker-end="url(#a)"/>
+<rect x="40" y="242" width="1180" height="128" rx="8" fill="#1B3F73" fill-opacity="0.06" stroke="#1B3F73" stroke-width="1.2"/>
+<rect x="40" y="242" width="170" height="128" rx="8" fill="#1B3F73"/>
+<text x="56" y="304.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="start">2.</text>
+<text x="56" y="323.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="start">INGESTION</text>
+<rect x="226.0" y="254" width="235.5" height="104" rx="6" fill="#FFFFFF" stroke="#1B3F73" stroke-opacity="0.55"/>
+<text x="343.75" y="280" font-family="Inter, Helvetica, Arial, sans-serif" font-size="14" font-weight="650" fill="#1B3F73" text-anchor="middle">Apache Kafka 3.9 (KRaft)</text>
+<text x="343.75" y="302" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#3A4449" text-anchor="middle">topic meter-readings-raw</text>
+<text x="343.75" y="320" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#6B7378" text-anchor="middle">ingestion/producer.py</text>
+<rect x="473.5" y="254" width="235.5" height="104" rx="6" fill="#FFFFFF" stroke="#1B3F73" stroke-opacity="0.55"/>
+<text x="591.25" y="280" font-family="Inter, Helvetica, Arial, sans-serif" font-size="14" font-weight="650" fill="#1B3F73" text-anchor="middle">Validate + clean</text>
+<text x="591.25" y="302" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#3A4449" text-anchor="middle">schema, range, duplicates, sentinels</text>
+<text x="591.25" y="320" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#6B7378" text-anchor="middle">validation.py · cleaning.py</text>
+<rect x="721.0" y="254" width="235.5" height="104" rx="6" fill="#FFFFFF" stroke="#1B3F73" stroke-opacity="0.55"/>
+<text x="838.75" y="280" font-family="Inter, Helvetica, Arial, sans-serif" font-size="14" font-weight="650" fill="#1B3F73" text-anchor="middle">Normalise timestamps</text>
+<text x="838.75" y="302" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#3A4449" text-anchor="middle">UTC + canonical grid, gap fill</text>
+<text x="838.75" y="320" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#6B7378" text-anchor="middle">normalise.py</text>
+<rect x="968.5" y="254" width="235.5" height="104" rx="6" fill="#FFFFFF" stroke="#1B3F73" stroke-opacity="0.55"/>
+<text x="1086.25" y="280" font-family="Inter, Helvetica, Arial, sans-serif" font-size="14" font-weight="650" fill="#1B3F73" text-anchor="middle">Feature extraction</text>
+<text x="1086.25" y="302" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#3A4449" text-anchor="middle">11 causal features, per-meter buffer</text>
+<text x="1086.25" y="320" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#6B7378" text-anchor="middle">features.py · stream_processor.py</text>
+<line x1="715.0" y1="372" x2="715.0" y2="390" stroke="#5A6B78" stroke-width="2" marker-end="url(#a)"/>
+<rect x="40" y="394" width="1180" height="128" rx="8" fill="#23807A" fill-opacity="0.06" stroke="#23807A" stroke-width="1.2"/>
+<rect x="40" y="394" width="170" height="128" rx="8" fill="#23807A"/>
+<text x="56" y="456.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="start">3.</text>
+<text x="56" y="475.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="start">STORAGE</text>
+<rect x="226.0" y="406" width="235.5" height="104" rx="6" fill="#FFFFFF" stroke="#23807A" stroke-opacity="0.55"/>
+<text x="343.75" y="432" font-family="Inter, Helvetica, Arial, sans-serif" font-size="14" font-weight="650" fill="#23807A" text-anchor="middle">raw_readings</text>
+<text x="343.75" y="454" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#3A4449" text-anchor="middle">hypertable, compression, retention</text>
+<text x="343.75" y="472" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#6B7378" text-anchor="middle">storage/schema.sql</text>
+<rect x="473.5" y="406" width="235.5" height="104" rx="6" fill="#FFFFFF" stroke="#23807A" stroke-opacity="0.55"/>
+<text x="591.25" y="432" font-family="Inter, Helvetica, Arial, sans-serif" font-size="14" font-weight="650" fill="#23807A" text-anchor="middle">processed_readings</text>
+<text x="591.25" y="454" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#3A4449" text-anchor="middle">features, scores, latency_ms</text>
+<text x="591.25" y="472" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#6B7378" text-anchor="middle">hypertable</text>
+<rect x="721.0" y="406" width="235.5" height="104" rx="6" fill="#FFFFFF" stroke="#23807A" stroke-opacity="0.55"/>
+<text x="838.75" y="432" font-family="Inter, Helvetica, Arial, sans-serif" font-size="14" font-weight="650" fill="#23807A" text-anchor="middle">hourly_consumption</text>
+<text x="838.75" y="454" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#3A4449" text-anchor="middle">continuous aggregate (history)</text>
+<text x="838.75" y="472" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#6B7378" text-anchor="middle">cross-utility axis</text>
+<rect x="968.5" y="406" width="235.5" height="104" rx="6" fill="#FFFFFF" stroke="#23807A" stroke-opacity="0.55"/>
+<text x="1086.25" y="432" font-family="Inter, Helvetica, Arial, sans-serif" font-size="14" font-weight="650" fill="#23807A" text-anchor="middle">anomalies + audit_log</text>
+<text x="1086.25" y="454" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#3A4449" text-anchor="middle">alerts, status, threshold changes</text>
+<text x="1086.25" y="472" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#6B7378" text-anchor="middle">study_responses</text>
+<line x1="715.0" y1="524" x2="715.0" y2="542" stroke="#5A6B78" stroke-width="2" marker-end="url(#a)"/>
+<rect x="40" y="546" width="1180" height="162" rx="8" fill="#4E8A2E" fill-opacity="0.06" stroke="#4E8A2E" stroke-width="1.2"/>
+<rect x="40" y="546" width="170" height="162" rx="8" fill="#4E8A2E"/>
+<text x="56" y="625.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="start">4.</text>
+<text x="56" y="644.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="start">DETECTION</text>
+<rect x="226.0" y="558" width="235.5" height="104" rx="6" fill="#FFFFFF" stroke="#4E8A2E" stroke-opacity="0.55"/>
+<text x="343.75" y="584" font-family="Inter, Helvetica, Arial, sans-serif" font-size="14" font-weight="650" fill="#4E8A2E" text-anchor="middle">Statistical</text>
+<text x="343.75" y="606" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#3A4449" text-anchor="middle">Z-score (hourly profile)</text>
+<text x="343.75" y="624" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#6B7378" text-anchor="middle">24-hour moving average</text>
+<rect x="473.5" y="558" width="235.5" height="104" rx="6" fill="#FFFFFF" stroke="#4E8A2E" stroke-opacity="0.55"/>
+<text x="591.25" y="584" font-family="Inter, Helvetica, Arial, sans-serif" font-size="14" font-weight="650" fill="#4E8A2E" text-anchor="middle">Machine learning</text>
+<text x="591.25" y="606" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#3A4449" text-anchor="middle">Isolation Forest</text>
+<text x="591.25" y="624" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#6B7378" text-anchor="middle">One-Class SVM</text>
+<rect x="721.0" y="558" width="235.5" height="104" rx="6" fill="#FFFFFF" stroke="#4E8A2E" stroke-opacity="0.55"/>
+<text x="838.75" y="584" font-family="Inter, Helvetica, Arial, sans-serif" font-size="14" font-weight="650" fill="#4E8A2E" text-anchor="middle">Deep learning</text>
+<text x="838.75" y="606" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#3A4449" text-anchor="middle">LSTM autoencoder (PyTorch)</text>
+<text x="838.75" y="624" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#6B7378" text-anchor="middle">16-step windows</text>
+<rect x="968.5" y="558" width="235.5" height="104" rx="6" fill="#FFFFFF" stroke="#4E8A2E" stroke-opacity="0.55"/>
+<text x="1086.25" y="584" font-family="Inter, Helvetica, Arial, sans-serif" font-size="14" font-weight="650" fill="#4E8A2E" text-anchor="middle">Ensemble</text>
+<text x="1086.25" y="606" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#3A4449" text-anchor="middle">F1-weighted percentile fusion</text>
+<text x="1086.25" y="624" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#6B7378" text-anchor="middle">detection/engine.py</text>
+<rect x="226" y="704" width="978" height="0" />
+<line x1="715.0" y1="710" x2="715.0" y2="728" stroke="#5A6B78" stroke-width="2" marker-end="url(#a)"/>
+<rect x="40" y="732" width="1180" height="128" rx="8" fill="#5B3F99" fill-opacity="0.06" stroke="#5B3F99" stroke-width="1.2"/>
+<rect x="40" y="732" width="170" height="128" rx="8" fill="#5B3F99"/>
+<text x="56" y="794.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="start">5.</text>
+<text x="56" y="813.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="start">VISUALISATION</text>
+<rect x="226.0" y="744" width="129.4" height="104" rx="6" fill="#FFFFFF" stroke="#5B3F99" stroke-opacity="0.55"/>
+<text x="290.7142857142857" y="770" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" font-weight="650" fill="#5B3F99" text-anchor="middle">Real-time</text>
+<text x="290.7142857142857" y="788" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" font-weight="650" fill="#5B3F99" text-anchor="middle">monitoring</text>
+<text x="290.7142857142857" y="812" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#3A4449" text-anchor="middle">replay / live DB</text>
+<rect x="367.4" y="744" width="129.4" height="104" rx="6" fill="#FFFFFF" stroke="#5B3F99" stroke-opacity="0.55"/>
+<text x="432.14285714285717" y="770" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" font-weight="650" fill="#5B3F99" text-anchor="middle">Historical</text>
+<text x="432.14285714285717" y="788" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" font-weight="650" fill="#5B3F99" text-anchor="middle">analysis</text>
+<text x="432.14285714285717" y="812" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#3A4449" text-anchor="middle">60-day record</text>
+<rect x="508.9" y="744" width="129.4" height="104" rx="6" fill="#FFFFFF" stroke="#5B3F99" stroke-opacity="0.55"/>
+<text x="573.5714285714286" y="770" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" font-weight="650" fill="#5B3F99" text-anchor="middle">Cross-utility</text>
+<text x="573.5714285714286" y="788" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" font-weight="650" fill="#5B3F99" text-anchor="middle">comparison</text>
+<text x="573.5714285714286" y="812" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#3A4449" text-anchor="middle">hourly common axis</text>
+<rect x="650.3" y="744" width="129.4" height="104" rx="6" fill="#FFFFFF" stroke="#5B3F99" stroke-opacity="0.55"/>
+<text x="714.9999999999999" y="770" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" font-weight="650" fill="#5B3F99" text-anchor="middle">Alerts &amp;</text>
+<text x="714.9999999999999" y="788" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" font-weight="650" fill="#5B3F99" text-anchor="middle">notifications</text>
+<text x="714.9999999999999" y="812" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#3A4449" text-anchor="middle">ack · dismiss · escalate</text>
+<rect x="791.7" y="744" width="129.4" height="104" rx="6" fill="#FFFFFF" stroke="#5B3F99" stroke-opacity="0.55"/>
+<text x="856.4285714285713" y="770" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" font-weight="650" fill="#5B3F99" text-anchor="middle">Model</text>
+<text x="856.4285714285713" y="788" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" font-weight="650" fill="#5B3F99" text-anchor="middle">performance</text>
+<text x="856.4285714285713" y="812" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#3A4449" text-anchor="middle">KPIs, H1 / H2</text>
+<rect x="933.1" y="744" width="129.4" height="104" rx="6" fill="#FFFFFF" stroke="#5B3F99" stroke-opacity="0.55"/>
+<text x="997.8571428571428" y="770" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" font-weight="650" fill="#5B3F99" text-anchor="middle">Explainable AI</text>
+<text x="997.8571428571428" y="788" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" font-weight="650" fill="#5B3F99" text-anchor="middle">insights</text>
+<text x="997.8571428571428" y="812" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#3A4449" text-anchor="middle">SHAP · LIME · narrative</text>
+<rect x="1074.6" y="744" width="129.4" height="104" rx="6" fill="#FFFFFF" stroke="#5B3F99" stroke-opacity="0.55"/>
+<text x="1139.2857142857142" y="770" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" font-weight="650" fill="#5B3F99" text-anchor="middle">User study</text>
+<text x="1139.2857142857142" y="788" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" font-weight="650" fill="#5B3F99" text-anchor="middle">RQ3 / H3</text>
+<text x="1139.2857142857142" y="812" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#3A4449" text-anchor="middle">SUS · TAM · trust</text>
+<line x1="715.0" y1="862" x2="715.0" y2="880" stroke="#5A6B78" stroke-width="2" marker-end="url(#a)"/>
+<rect x="40" y="884" width="1180" height="78" rx="8" fill="#2C3E57" fill-opacity="0.06" stroke="#2C3E57" stroke-width="1.2"/>
+<rect x="40" y="884" width="170" height="78" rx="8" fill="#2C3E57"/>
+<text x="56" y="921.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="start">6.</text>
+<text x="56" y="940.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="start">USERS</text>
+<rect x="226.0" y="896" width="978.0" height="54" rx="6" fill="#FFFFFF" stroke="#2C3E57" stroke-opacity="0.55"/>
+<text x="715.0" y="922" font-family="Inter, Helvetica, Arial, sans-serif" font-size="14" font-weight="650" fill="#2C3E57" text-anchor="middle">Utility network operators</text>
+<text x="715.0" y="944" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#3A4449" text-anchor="middle">monitoring only — every action audited; thresholds operator-mediated</text>
+<rect x="226" y="670" width="978" height="28" rx="5" fill="#F3E3B5" stroke="#C99A2E"/>
+<text x="715.0" y="689" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#6B4E00" text-anchor="middle">Explainability: TreeSHAP on every alert (Isolation Forest) · LIME + KernelSHAP on the tabular ensemble · plain-language narrative  —  explain/xai.py, narrative.py</text>
+<rect x="1260" y="90" width="220" height="872" rx="8" fill="#F4F6F8" stroke="#2C3E57"/>
+<rect x="1260" y="90" width="220" height="46" rx="8" fill="#2C3E57"/>
+<text x="1370.0" y="119" font-family="Inter, Helvetica, Arial, sans-serif" font-size="14" font-weight="700" fill="#FFFFFF" text-anchor="middle">CROSS-CUTTING SERVICES</text>
+<rect x="1272" y="152" width="196" height="70" rx="6" fill="#FFFFFF" stroke="#9AA7B4"/>
+<text x="1284" y="174" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" font-weight="650" fill="#1D2327" text-anchor="start">Monitoring &amp; logging</text>
+<text x="1284" y="194" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#3A4449" text-anchor="start">· JSON logs (logging_setup.py)</text>
+<text x="1284" y="212" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#3A4449" text-anchor="start">· latency CSV + reports/</text>
+<rect x="1272" y="234" width="196" height="88" rx="6" fill="#FFFFFF" stroke="#9AA7B4"/>
+<text x="1284" y="256" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" font-weight="650" fill="#1D2327" text-anchor="start">Alert management</text>
+<text x="1284" y="276" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#3A4449" text-anchor="start">· severity, debounce, escalation</text>
+<text x="1284" y="294" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#3A4449" text-anchor="start">· cross-utility co-occurrence</text>
+<text x="1284" y="312" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#3A4449" text-anchor="start">· alerts/rules.py</text>
+<rect x="1272" y="334" width="196" height="88" rx="6" fill="#FFFFFF" stroke="#9AA7B4"/>
+<text x="1284" y="356" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" font-weight="650" fill="#1D2327" text-anchor="start">Security &amp; privacy</text>
+<text x="1284" y="376" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#3A4449" text-anchor="start">· no PII, env secrets</text>
+<text x="1284" y="394" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#3A4449" text-anchor="start">· least-privilege DB roles</text>
+<text x="1284" y="412" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#3A4449" text-anchor="start">· API key on writes</text>
+<rect x="1272" y="434" width="196" height="88" rx="6" fill="#FFFFFF" stroke="#9AA7B4"/>
+<text x="1284" y="456" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" font-weight="650" fill="#1D2327" text-anchor="start">API layer</text>
+<text x="1284" y="476" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#3A4449" text-anchor="start">· FastAPI REST (api/main.py)</text>
+<text x="1284" y="494" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#3A4449" text-anchor="start">· /readings /anomalies /metrics</text>
+<text x="1284" y="512" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#3A4449" text-anchor="start">· /thresholds /alerts/{id}/ack</text>
+<rect x="1272" y="534" width="196" height="70" rx="6" fill="#FFFFFF" stroke="#9AA7B4"/>
+<text x="1284" y="556" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" font-weight="650" fill="#1D2327" text-anchor="start">Backup &amp; recovery</text>
+<text x="1284" y="576" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#3A4449" text-anchor="start">· pg_dump rotation</text>
+<text x="1284" y="594" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#3A4449" text-anchor="start">· ops/backup/backup.sh</text>
+<line x1="1260" y1="400" x2="1224" y2="400" stroke="#5A6B78" stroke-dasharray="5 4" stroke-width="1.4" marker-end="url(#a)"/>
+<text x="40" y="986" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12.5" font-weight="500" fill="#3A4449" text-anchor="start">Deployment: docker compose (TimescaleDB, Kafka, trainer, producer, consumer, API, dashboard, backup)  ·  dashboard demo mode on Streamlit Community Cloud  ·  design prototype on GitHub Pages</text>
+<text x="40" y="1006" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#6B7378" text-anchor="start">Solid arrows: data flow.  Dashed arrow: control / monitoring flow.  Detection layer boxes are the implemented models; Figure 1 components are all present.</text>
+</svg>

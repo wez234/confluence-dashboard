@@ -1,0 +1,8 @@
+{
+  "readings": 4014,
+  "span_s": 22.326258182525635,
+  "max_throughput_readings_per_s": 179.7882998209564,
+  "e2e_mean_s": 11.466190481102757,
+  "e2e_max_s": 21.47775912284851,
+  "note": "stress test: 1 simulated day + warm-up published as fast as possible (backlog), so latency here reflects queueing, not steady state"
+}

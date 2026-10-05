@@ -1,0 +1,555 @@
+{
+  "config": {
+    "source": "synthetic",
+    "sgcc_path": "data/sgcc/data.csv",
+    "days": 60,
+    "meters": 10,
+    "seed": 7,
+    "stream_records": 300,
+    "lime_samples": 20,
+    "batch_size": 50
+  },
+  "generated_at": "2026-09-29T04:09:59.766547+00:00",
+  "ingestion": {
+    "raw_records": 121811,
+    "validation": {
+      "ok": 121338,
+      "missing_value": 473
+    },
+    "cleaning": {
+      "input": 121811,
+      "duplicates_removed": 490,
+      "negatives_nulled": 100,
+      "missing_values": 569
+    },
+    "normalised_rows": 129596,
+    "rows_per_utility": {
+      "electricity": 57600,
+      "gas": 14400,
+      "water": 57596
+    },
+    "interpolated_values": 15418
+  },
+  "split": {
+    "train": [
+      "2026-01-05 00:00:00+00:00",
+      "2026-02-09 00:00:00+00:00"
+    ],
+    "validation": [
+      "2026-02-09 00:00:00+00:00",
+      "2026-02-19 00:00:00+00:00"
+    ],
+    "test": [
+      "2026-02-19 00:00:00+00:00",
+      "2026-03-05 23:45:00+00:00"
+    ],
+    "anomaly_rate": {
+      "train": 0.03683862433862434,
+      "validation": 0.04532407407407407,
+      "test": 0.033862205210519816
+    }
+  },
+  "training": {
+    "electricity": {
+      "fit_seconds": {
+        "zscore": 1.447182148694992e-05,
+        "moving_average": 7.573980838060379e-06,
+        "isolation_forest": 0.314713248051703,
+        "one_class_svm": 0.02748035592958331,
+        "lstm_autoencoder": 3.8533294070512056
+      },
+      "ensemble_weights": {
+        "zscore": 0.2532438900860308,
+        "moving_average": 0.10082379829183248,
+        "isolation_forest": 0.21622008659469008,
+        "one_class_svm": 0.21311733756216292,
+        "lstm_autoencoder": 0.21659488746528363
+      }
+    },
+    "gas": {
+      "fit_seconds": {
+        "zscore": 7.667113095521927e-06,
+        "moving_average": 4.753004759550095e-06,
+        "isolation_forest": 0.26012339582666755,
+        "one_class_svm": 0.025403372012078762,
+        "lstm_autoencoder": 1.4574370440095663
+      },
+      "ensemble_weights": {
+        "zscore": 0.2949893564919404,
+        "moving_average": 0.04644609683628862,
+        "isolation_forest": 0.2022985551091682,
+        "one_class_svm": 0.21089038563504023,
+        "lstm_autoencoder": 0.24537560592756252
+      }
+    },
+    "water": {
+      "fit_seconds": {
+        "zscore": 4.527159035205841e-06,
+        "moving_average": 4.047993570566177e-06,
+        "isolation_forest": 0.30796028720214963,
+        "one_class_svm": 0.02759912796318531,
+        "lstm_autoencoder": 2.8717373702675104
+      },
+      "ensemble_weights": {
+        "zscore": 0.30019789436772615,
+        "moving_average": 0.04415679736773483,
+        "isolation_forest": 0.19975042505026866,
+        "one_class_svm": 0.25244357740421997,
+        "lstm_autoencoder": 0.20345130581005044
+      }
+    }
+  },
+  "thresholds": {
+    "electricity": {
+      "zscore": 2.212205931310851,
+      "moving_average": 1.1987192529177477,
+      "isolation_forest": 0.5019707057298396,
+      "one_class_svm": 0.3602966238216947,
+      "lstm_autoencoder": 0.07874663174152374,
+      "ensemble": 0.8527642408592816
+    },
+    "gas": {
+      "zscore": 2.4065602861830895,
+      "moving_average": 3.850055840620696,
+      "isolation_forest": 0.5174912661086174,
+      "one_class_svm": -0.09267443950648158,
+      "lstm_autoencoder": 0.20153851807117462,
+      "ensemble": 0.9220954030384809
+    },
+    "water": {
+      "zscore": 2.83148149903669,
+      "moving_average": 2.250288285214351,
+      "isolation_forest": 0.5959823179453749,
+      "one_class_svm": 0.6959725280823648,
+      "lstm_autoencoder": 0.21655921638011932,
+      "ensemble": 0.8997051567616919
+    }
+  },
+  "batch_scoring": {
+    "rows": 32396,
+    "seconds": 0.6711368560791016,
+    "rows_per_second": 48270.3336980524
+  },
+  "detection": {
+    "overall": {
+      "zscore": {
+        "precision": 0.26156716417910447,
+        "recall": 0.6390154968094804,
+        "f1": 0.37119406936722266,
+        "roc_auc": 0.8962899307190391,
+        "recall_at_fpr5": 0.6453965360072926,
+        "n": 32394,
+        "positives": 1097
+      },
+      "moving_average": {
+        "precision": 0.0671417854463616,
+        "recall": 0.16317228805834094,
+        "f1": 0.09513685888918416,
+        "roc_auc": 0.5370034243338493,
+        "recall_at_fpr5": 0.08751139471285324,
+        "n": 32394,
+        "positives": 1097
+      },
+      "isolation_forest": {
+        "precision": 0.3112391930835735,
+        "recall": 0.49225159525979945,
+        "f1": 0.3813559322033898,
+        "roc_auc": 0.9180148061872828,
+        "recall_at_fpr5": 0.5961713764813127,
+        "n": 32394,
+        "positives": 1097
+      },
+      "one_class_svm": {
+        "precision": 0.37581344902386116,
+        "recall": 0.6317228805834093,
+        "f1": 0.4712682760965658,
+        "roc_auc": 0.89826617449216,
+        "recall_at_fpr5": 0.7046490428441203,
+        "n": 32394,
+        "positives": 1097
+      },
+      "lstm_autoencoder": {
+        "precision": 0.24849982350864808,
+        "recall": 0.6743295019157088,
+        "f1": 0.3631673974722724,
+        "roc_auc": 0.8995455616312663,
+        "recall_at_fpr5": 0.5727969348659003,
+        "n": 31944,
+        "positives": 1044
+      },
+      "ensemble": {
+        "precision": 0.36650943396226415,
+        "recall": 0.7082953509571559,
+        "f1": 0.4830587503885608,
+        "roc_auc": 0.9318658429608832,
+        "recall_at_fpr5": 0.7575205104831358,
+        "n": 32394,
+        "positives": 1097
+      }
+    },
+    "per_utility": {
+      "zscore": {
+        "electricity": {
+          "precision": 0.2926829268292683,
+          "recall": 0.8323699421965318,
+          "f1": 0.4330827067669173,
+          "roc_auc": 0.9397542197031498,
+          "recall_at_fpr5": 0.7957610789980732,
+          "n": 14400,
+          "positives": 519
+        },
+        "gas": {
+          "precision": 0.25213675213675213,
+          "recall": 0.7763157894736842,
+          "f1": 0.38064516129032255,
+          "roc_auc": 0.9141469771193023,
+          "recall_at_fpr5": 0.7763157894736842,
+          "n": 3600,
+          "positives": 76
+        },
+        "water": {
+          "precision": 0.21649484536082475,
+          "recall": 0.41832669322709165,
+          "f1": 0.28532608695652173,
+          "roc_auc": 0.8459319216081255,
+          "recall_at_fpr5": 0.39641434262948205,
+          "n": 14394,
+          "positives": 502
+        }
+      },
+      "moving_average": {
+        "electricity": {
+          "precision": 0.07722772277227723,
+          "recall": 0.30057803468208094,
+          "f1": 0.12288302481291848,
+          "roc_auc": 0.5704259672673269,
+          "recall_at_fpr5": 0.1252408477842004,
+          "n": 14400,
+          "positives": 519
+        },
+        "gas": {
+          "precision": 1.0,
+          "recall": 0.02631578947368421,
+          "f1": 0.05128205128205128,
+          "roc_auc": 0.668375500328574,
+          "recall_at_fpr5": 0.13157894736842105,
+          "n": 3600,
+          "positives": 76
+        },
+        "water": {
+          "precision": 0.03260869565217391,
+          "recall": 0.04183266932270916,
+          "f1": 0.03664921465968586,
+          "roc_auc": 0.507447893424861,
+          "recall_at_fpr5": 0.043824701195219126,
+          "n": 14394,
+          "positives": 502
+        }
+      },
+      "isolation_forest": {
+        "electricity": {
+          "precision": 0.319665907365224,
+          "recall": 0.8111753371868978,
+          "f1": 0.45860566448801743,
+          "roc_auc": 0.9410920431706943,
+          "recall_at_fpr5": 0.7764932562620424,
+          "n": 14400,
+          "positives": 519
+        },
+        "gas": {
+          "precision": 0.34074074074074073,
+          "recall": 0.6052631578947368,
+          "f1": 0.43601895734597157,
+          "roc_auc": 0.9256227970607562,
+          "recall_at_fpr5": 0.631578947368421,
+          "n": 3600,
+          "positives": 76
+        },
+        "water": {
+          "precision": 0.2579505300353357,
+          "recall": 0.1454183266932271,
+          "f1": 0.1859872611464968,
+          "roc_auc": 0.887638619148514,
+          "recall_at_fpr5": 0.3545816733067729,
+          "n": 14394,
+          "positives": 502
+        }
+      },
+      "one_class_svm": {
+        "electricity": {
+          "precision": 0.43815028901734104,
+          "recall": 0.7302504816955684,
+          "f1": 0.5476878612716763,
+          "roc_auc": 0.8933829097008026,
+          "recall_at_fpr5": 0.7649325626204239,
+          "n": 14400,
+          "positives": 519
+        },
+        "gas": {
+          "precision": 0.3103448275862069,
+          "recall": 0.7105263157894737,
+          "f1": 0.432,
+          "roc_auc": 0.9509528645677758,
+          "recall_at_fpr5": 0.8157894736842105,
+          "n": 3600,
+          "positives": 76
+        },
+        "water": {
+          "precision": 0.32298136645962733,
+          "recall": 0.5179282868525896,
+          "f1": 0.3978576893649579,
+          "roc_auc": 0.8956737117180572,
+          "recall_at_fpr5": 0.5856573705179283,
+          "n": 14394,
+          "positives": 502
+        }
+      },
+      "lstm_autoencoder": {
+        "electricity": {
+          "precision": 0.2983345401882694,
+          "recall": 0.8323232323232324,
+          "f1": 0.43923240938166314,
+          "roc_auc": 0.9444263059530235,
+          "recall_at_fpr5": 0.8080808080808081,
+          "n": 14250,
+          "positives": 495
+        },
+        "gas": {
+          "precision": 0.24516129032258063,
+          "recall": 0.5428571428571428,
+          "f1": 0.3377777777777778,
+          "roc_auc": 0.8826796280642435,
+          "recall_at_fpr5": 0.6,
+          "n": 3450,
+          "positives": 70
+        },
+        "water": {
+          "precision": 0.19583654587509639,
+          "recall": 0.5302713987473904,
+          "f1": 0.28603603603603606,
+          "roc_auc": 0.8594727937713802,
+          "recall_at_fpr5": 0.3757828810020877,
+          "n": 14244,
+          "positives": 479
+        }
+      },
+      "ensemble": {
+        "electricity": {
+          "precision": 0.4015594541910331,
+          "recall": 0.7938342967244701,
+          "f1": 0.5333333333333333,
+          "roc_auc": 0.9463735170362892,
+          "recall_at_fpr5": 0.8015414258188824,
+          "n": 14400,
+          "positives": 519
+        },
+        "gas": {
+          "precision": 0.31843575418994413,
+          "recall": 0.75,
+          "f1": 0.4470588235294118,
+          "roc_auc": 0.939684270267041,
+          "recall_at_fpr5": 0.8026315789473685,
+          "n": 3600,
+          "positives": 76
+        },
+        "water": {
+          "precision": 0.3366120218579235,
+          "recall": 0.6135458167330677,
+          "f1": 0.4347212420606916,
+          "roc_auc": 0.9181463033555384,
+          "recall_at_fpr5": 0.6713147410358565,
+          "n": 14394,
+          "positives": 502
+        }
+      }
+    },
+    "per_type_recall": {
+      "zscore": {
+        "drift": 0.808641975308642,
+        "drop": 0.4931506849315068,
+        "leak": 0.6066666666666667,
+        "spike": 1.0,
+        "stuck": 0.5723905723905723,
+        "temporal": 0.6783398184176395,
+        "temporal_at_fpr5": 0.6549935149156939
+      },
+      "moving_average": {
+        "drift": 0.2716049382716049,
+        "drop": 0.1232876712328767,
+        "leak": 0.10666666666666667,
+        "spike": 0.7058823529411765,
+        "stuck": 0.050505050505050504,
+        "temporal": 0.1543450064850843,
+        "temporal_at_fpr5": 0.08300907911802853
+      },
+      "isolation_forest": {
+        "drift": 0.7345679012345679,
+        "drop": 0.2671232876712329,
+        "leak": 0.12,
+        "spike": 1.0,
+        "stuck": 0.5791245791245792,
+        "temporal": 0.5551232166018158,
+        "temporal_at_fpr5": 0.6679636835278858
+      },
+      "one_class_svm": {
+        "drift": 0.654320987654321,
+        "drop": 0.3287671232876712,
+        "leak": 0.48,
+        "spike": 1.0,
+        "stuck": 0.9393939393939394,
+        "temporal": 0.7302204928664072,
+        "temporal_at_fpr5": 0.7626459143968871
+      },
+      "lstm_autoencoder": {
+        "drift": 0.8827160493827161,
+        "drop": 0.4383561643835616,
+        "leak": 0.8133333333333334,
+        "spike": 1.0,
+        "stuck": 0.4511784511784512,
+        "temporal": 0.7029831387808041,
+        "temporal_at_fpr5": 0.6070038910505836
+      },
+      "ensemble": {
+        "drift": 0.7376543209876543,
+        "drop": 0.7397260273972602,
+        "leak": 0.5866666666666667,
+        "spike": 1.0,
+        "stuck": 0.6734006734006734,
+        "temporal": 0.6835278858625162,
+        "temporal_at_fpr5": 0.6874189364461738
+      }
+    },
+    "event_level": {
+      "zscore": {
+        "events": 217,
+        "detected": 142,
+        "event_recall": 0.6543778801843319,
+        "median_delay_steps": 0.0
+      },
+      "moving_average": {
+        "events": 217,
+        "detected": 27,
+        "event_recall": 0.12442396313364056,
+        "median_delay_steps": 0.0
+      },
+      "isolation_forest": {
+        "events": 217,
+        "detected": 66,
+        "event_recall": 0.30414746543778803,
+        "median_delay_steps": 0.0
+      },
+      "one_class_svm": {
+        "events": 217,
+        "detected": 171,
+        "event_recall": 0.7880184331797235,
+        "median_delay_steps": 0.0
+      },
+      "lstm_autoencoder": {
+        "events": 217,
+        "detected": 143,
+        "event_recall": 0.6589861751152074,
+        "median_delay_steps": 0.0
+      },
+      "ensemble": {
+        "events": 217,
+        "detected": 168,
+        "event_recall": 0.7741935483870968,
+        "median_delay_steps": 0.0
+      }
+    }
+  },
+  "H1": {
+    "temporal": {
+      "lstm_recall": 0.7029831387808041,
+      "vs": {
+        "zscore": {
+          "recall": 0.6783398184176395,
+          "relative_improvement": 0.0363288718929253,
+          "absolute_pp": 2.4643320363164634
+        },
+        "moving_average": {
+          "recall": 0.1543450064850843,
+          "relative_improvement": 3.554621848739495,
+          "absolute_pp": 54.86381322957198
+        },
+        "isolation_forest": {
+          "recall": 0.5551232166018158,
+          "relative_improvement": 0.26635514018691575,
+          "absolute_pp": 14.785992217898825
+        }
+      },
+      "supported": false
+    },
+    "temporal_at_fpr5": {
+      "lstm_recall": 0.6070038910505836,
+      "vs": {
+        "zscore": {
+          "recall": 0.6549935149156939,
+          "relative_improvement": -0.07326732673267335,
+          "absolute_pp": -4.79896238651103
+        },
+        "moving_average": {
+          "recall": 0.08300907911802853,
+          "relative_improvement": 6.312499999999999,
+          "absolute_pp": 52.399481193255504
+        },
+        "isolation_forest": {
+          "recall": 0.6679636835278858,
+          "relative_improvement": -0.09126213592233011,
+          "absolute_pp": -6.095979247730221
+        }
+      },
+      "supported": false
+    }
+  },
+  "explainability": {
+    "alerts_explained": 2120,
+    "shap_ms_per_alert": 3.2807981068233274,
+    "lime_ms_per_alert": 36.120545864105225,
+    "plausibility_top1": 0.7966537966537967,
+    "plausibility_top3": 0.9768339768339769,
+    "plausibility_top1_chance": 0.23636363636363636,
+    "kernel_shap_ms_per_alert": 109.52917337417603,
+    "treeshap_if_vs_lime_ensemble_jaccard": 0.45999999999999996,
+    "kernelshap_vs_lime_same_model_jaccard": 0.57,
+    "lime_sample": 20
+  },
+  "streaming": {
+    "records_in": 300,
+    "batch_size": 50,
+    "readings_scored": 286,
+    "alerts": 27,
+    "latency_mean_s": 0.3901467706773665,
+    "latency_p50_s": 0.37960100173950195,
+    "latency_p95_s": 0.48010683059692383,
+    "latency_p99_s": 0.48010683059692383,
+    "latency_max_s": 0.48010683059692383,
+    "throughput_records_per_s": 128.2123438690727,
+    "cpu_utilisation_pct": 51.712312027192695,
+    "peak_rss_mb": 794.9765625,
+    "training_rss_increase_mb": 166.89453125,
+    "note": "in-process processing latency (validate->clean->normalise->features->5 models+ensemble->SHAP); Kafka + TimescaleDB transit is measured by the docker pipeline (latency_ms column)."
+  },
+  "H2": {
+    "target_s": 2.5,
+    "mean_s": 0.3901467706773665,
+    "p95_s": 0.48010683059692383,
+    "supported": true
+  },
+  "alert_debounce": {
+    "candidate_events": 855,
+    "candidate_event_precision": 0.1064327485380117
+  },
+  "alerts": {
+    "events": 552,
+    "true_event_coverage": 0.783410138248848,
+    "by_severity": {
+      "critical": 321,
+      "warning": 219,
+      "info": 12
+    },
+    "cross_utility": 302,
+    "event_precision": 0.15579710144927536
+  },
+  "runtime_seconds": 89.22201490402222
+}

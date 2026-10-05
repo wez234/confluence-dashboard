@@ -1,0 +1,188 @@
+{
+  "stl": {
+    "overall": {
+      "precision": 0.17506838608831574,
+      "recall": 0.4163568773234201,
+      "f1": 0.2464924346629986,
+      "roc_auc": 0.7800543747526761,
+      "recall_at_fpr5": 0.23513011152416358,
+      "n": 32387,
+      "positives": 1076
+    },
+    "by_utility_f1": {
+      "electricity": 0.41622839969947406,
+      "gas": 0.2903225806451613,
+      "water": 0.1359773371104816
+    },
+    "recall_by_type": {
+      "drift": 0.3752577319587629,
+      "drop": 0.45226130653266333,
+      "leak": 0.46502057613168724,
+      "spike": 0.9142857142857143,
+      "stuck": 0.2719298245614035,
+      "temporal": 0.38717339667458434,
+      "temporal_at_fpr5": 0.21258907363420426
+    },
+    "event": {
+      "events": 149,
+      "detected": 109,
+      "event_recall": 0.7315436241610739,
+      "median_delay_steps": 0.0
+    },
+    "fit_score_seconds_all_meters_60_days": 52.27228728123009
+  },
+  "inference_ms_per_1000": {
+    "zscore": {
+      "electricity": 0.006996787204924557,
+      "gas": 0.0109597264478604,
+      "water": 0.0035496849932267573,
+      "mean": 0.007168732882003905
+    },
+    "moving_average": {
+      "electricity": 0.004014517698023055,
+      "gas": 0.010351650416851044,
+      "water": 0.0034812862417401354,
+      "mean": 0.005949151452204745
+    },
+    "isolation_forest": {
+      "electricity": 7.935866661783721,
+      "gas": 10.557967859009901,
+      "water": 7.5844314881509955,
+      "mean": 8.692755336314873
+    },
+    "one_class_svm": {
+      "electricity": 4.807888116273616,
+      "gas": 4.958949931379821,
+      "water": 5.255836224543965,
+      "mean": 5.007558090732467
+    },
+    "lstm_autoencoder": {
+      "electricity": 6.499253407431145,
+      "gas": 6.461630497748653,
+      "water": 6.562704715213641,
+      "mean": 6.50786287346448
+    }
+  },
+  "detection_delay": {
+    "zscore": {
+      "electricity": {
+        "events": 17,
+        "detected": 17,
+        "median_delay_minutes": 0.0
+      },
+      "gas": {
+        "events": 14,
+        "detected": 14,
+        "median_delay_minutes": 0.0
+      },
+      "water": {
+        "events": 118,
+        "detected": 93,
+        "median_delay_minutes": 0.0
+      }
+    },
+    "moving_average": {
+      "electricity": {
+        "events": 17,
+        "detected": 16,
+        "median_delay_minutes": 0.0
+      },
+      "gas": {
+        "events": 14,
+        "detected": 6,
+        "median_delay_minutes": 0.0
+      },
+      "water": {
+        "events": 118,
+        "detected": 36,
+        "median_delay_minutes": 0.0
+      }
+    },
+    "isolation_forest": {
+      "electricity": {
+        "events": 17,
+        "detected": 17,
+        "median_delay_minutes": 0.0
+      },
+      "gas": {
+        "events": 14,
+        "detected": 14,
+        "median_delay_minutes": 0.0
+      },
+      "water": {
+        "events": 118,
+        "detected": 46,
+        "median_delay_minutes": 0.0
+      }
+    },
+    "one_class_svm": {
+      "electricity": {
+        "events": 17,
+        "detected": 17,
+        "median_delay_minutes": 0.0
+      },
+      "gas": {
+        "events": 14,
+        "detected": 14,
+        "median_delay_minutes": 30.0
+      },
+      "water": {
+        "events": 118,
+        "detected": 59,
+        "median_delay_minutes": 0.0
+      }
+    },
+    "lstm_autoencoder": {
+      "electricity": {
+        "events": 17,
+        "detected": 17,
+        "median_delay_minutes": 15.0
+      },
+      "gas": {
+        "events": 14,
+        "detected": 13,
+        "median_delay_minutes": 60.0
+      },
+      "water": {
+        "events": 118,
+        "detected": 31,
+        "median_delay_minutes": 0.0
+      }
+    },
+    "ensemble": {
+      "electricity": {
+        "events": 17,
+        "detected": 17,
+        "median_delay_minutes": 0.0
+      },
+      "gas": {
+        "events": 14,
+        "detected": 14,
+        "median_delay_minutes": 0.0
+      },
+      "water": {
+        "events": 118,
+        "detected": 101,
+        "median_delay_minutes": 0.0
+      }
+    },
+    "stl": {
+      "electricity": {
+        "events": 17,
+        "detected": 14,
+        "median_delay_minutes": 15.0
+      },
+      "gas": {
+        "events": 14,
+        "detected": 14,
+        "median_delay_minutes": 90.0
+      },
+      "water": {
+        "events": 118,
+        "detected": 81,
+        "median_delay_minutes": 0.0
+      }
+    }
+  },
+  "note": "Inference cost is batch scoring time on the test period divided by readings (best of 3), single process, 2 vCPU. STL is offline (centred decomposition over the full 60 days)."
+}

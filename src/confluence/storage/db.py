@@ -117,7 +117,7 @@ def insert_alert(conn, r, severity: str, site_id: str) -> None:
         cur.execute("""INSERT INTO anomalies (ts, meter_id, site_id, utility, value, ensemble_score, votes, severity,
                        explanation) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
                     (r.ts.to_pydatetime(), r.meter_id, site_id, r.utility, _f(r.value), _f(r.ensemble_score), r.votes,
-                     severity, _j(r.shap_top)))
+                     severity, _j({"shap_top": r.shap_top, "narrative": getattr(r, "narrative", "")})))
 
 
 def audit(conn, actor: str, action: str, target: str, details: dict) -> None:

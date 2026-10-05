@@ -21,6 +21,7 @@ from confluence.config import UTILITIES
 from confluence.detection.engine import DetectionEngine
 from confluence.ingestion.features import FEATURES, compute_features
 from confluence.ingestion.validation import validate_record
+from confluence.explain.narrative import narrative
 
 BUFFER = 100   # > 24h of 15-min readings, needed by the 24-hour moving average
 
@@ -38,6 +39,7 @@ class ProcessedReading:
     is_alert: bool
     votes: int
     shap_top: list = field(default_factory=list)
+    narrative: str = ""
     received_at: float = 0.0
     decided_at: float = 0.0
     produced_at: float | None = None
@@ -161,17 +163,19 @@ class StreamProcessor:
             utility = n["utility"]
             um = self.engine.models[utility]
             alert = bool(row["flag_ensemble"])
-            shap_top = []
+            shap_top, narr = [], ""
             if alert and self.explainer is not None:
                 x = row[FEATURES].astype(float).fillna(0).values[None, :]
                 shap_top = self.explainer.top(self.explainer.shap_values(utility, x)[0])
+                narr = narrative(utility, n["meter_id"], float(n["value"]), UTILITIES[utility].unit, shap_top,
+                                 dict(zip(FEATURES, x[0])))
             ens = float(row["score_ensemble"]) if pd.notna(row["score_ensemble"]) else float("nan")
             out.append(ProcessedReading(
                 ts=n["ts"], meter_id=n["meter_id"], utility=utility, value=float(n["value"]),
                 features={f: float(row[f]) for f in FEATURES if pd.notna(row[f])},
                 scores={d: float(row[f"score_{d}"]) for d in um.detectors},
                 flags={d: bool(row[f"flag_{d}"]) for d in um.detectors},
-                ensemble_score=ens, is_alert=alert, votes=int(row["votes"]), shap_top=shap_top,
+                ensemble_score=ens, is_alert=alert, votes=int(row["votes"]), shap_top=shap_top, narrative=narr,
                 received_at=received, decided_at=0.0, produced_at=pa,
                 truth=n.get("is_anomaly"), anomaly_type=n.get("anomaly_type", "")))
         decided = time.time()

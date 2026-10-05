@@ -57,10 +57,12 @@ def test_explainer_shap_and_lime(engine, feats):
     assert lv.shape == (len(FEATURES),) and np.abs(lv).sum() > 0
 
 
-def test_stream_processor_matches_record_path(engine, raw):
+def test_stream_processor_matches_record_path(engine, raw, feats):
     from confluence.ingestion.stream_processor import StreamProcessor
     eng, _ = engine
-    sp = StreamProcessor(eng)
+    from confluence.explain.xai import Explainer
+    f, _, cut = feats
+    sp = StreamProcessor(eng, explainer=Explainer(eng, f[f.ts < cut]))
     recs = raw.assign(_t=pd.to_datetime(raw.ts, utc=True, format="ISO8601")).sort_values("_t").drop(columns="_t")
     recs = recs.head(3000).to_dict("records")
     for r in recs:
@@ -71,6 +73,8 @@ def test_stream_processor_matches_record_path(engine, raw):
     assert len(out) > 1000
     assert all(o.processing_latency_s >= 0 for o in out)
     assert sp.stats["cleaning:duplicate"] > 0
+    alerts = [o for o in out if o.is_alert]
+    assert alerts and all(o.shap_top and o.narrative.startswith(o.utility.title()) for o in alerts)
 
 
 def test_alert_rules():

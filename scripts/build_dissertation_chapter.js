@@ -41,8 +41,8 @@ function tab(id) { return `Table ${tabIds[id]}`; }
 // pre-register ids so text can reference before definition
 const FIG_ORDER = ['arch', 'series', 'mon', 'cross', 'alerts', 'xai', 'study', 'f1auc', 'roc', 'util', 'types', 'h1', 'lat', 'cost'];
 FIG_ORDER.forEach((k, i) => (figIds[k] = i + 1));
-const TAB_ORDER = ['layers', 'data', 'anoms', 'ingest', 'schema', 'features', 'detectors', 'pages', 'levels', 'unit', 'defects', 'perf_setup',
-  'metrics_def', 'latency', 'main', 'utilf1', 'h1', 'robust', 'xai', 'alerts', 'summary'];
+const TAB_ORDER = ['align', 'layers', 'data', 'anoms', 'ingest', 'schema', 'features', 'detectors', 'pages', 'levels', 'unit', 'defects', 'perf_setup',
+  'metrics_def', 'latency', 'main', 'utilf1', 'h1', 'robust', 'xai', 'alerts', 'summary', 'outcomes', 'deploy'];
 TAB_ORDER.forEach((k, i) => (tabIds[k] = i + 1));
 
 function image(file, widthPx, caption, id, alt) {
@@ -99,6 +99,23 @@ add(P('This submission reports what was actually built, how it was tested and wh
 // ======================= 4 IMPLEMENTATION =======================
 add(H1('4. Implementation'));
 add(P('Following the Design Science Research process (Hevner et al., 2004; Peffers et al., 2007), this chapter describes the design and development activity: the artefact that was built to answer RQ1 and to provide the experimental vehicle for RQ2 and RQ3. The platform, called Confluence, is written in Python 3 (about 4,200 lines across the `src/confluence` package, the Streamlit dashboard and the test suite). Section 4.1 presents the architecture as built; Sections 4.2 to 4.6 follow a reading from the meter to the operator\'s screen.'));
+add(P('The work followed the six DSR activities of Peffers et al. (2007). **Problem identification and motivation** are covered in Chapters 1–2. **Objectives of a solution** were made explicit as a requirements specification of 29 functional and 13 non-functional requirements, each traced to a research question, hypothesis, outcome or ethical commitment (`docs/REQUIREMENTS.md` in the repository). **Design and development** are reported in this chapter. **Demonstration** was carried out by replaying the held-out test period through the live Kafka pipeline and the dashboard (Sections 5.3 and 6.4). **Evaluation** is reported in Chapters 5 and 6, and **communication** is through this thesis and the public code repository.'));
+add(P(`${tab('align')} checks the artefact against each commitment made in the proposal, so that any deviation is visible and justified rather than hidden.`));
+add(table('align', 'Alignment of the implemented artefact with the proposal', ['Proposal commitment (section)', 'As implemented', 'Reported in', 'Status'], [
+  ['Five-layer architecture (3.1)', 'Data sources, Kafka ingestion, PostgreSQL/TimescaleDB storage, detection engine, Streamlit dashboard, plus cross-cutting services', '4.1', 'Implemented'],
+  ['Kappa, not Lambda; no serverless (3.2)', 'Single streaming code path shared by training, replay and live processing', '4.1', 'Implemented as proposed'],
+  ['SGCC, UK smart-meter and simulated water data (3.1)', 'Synthetic labelled data for all three utilities used in experiments; SGCC and London smart-meter adapters implemented and tested', '4.2.1', 'Deviation: public data lack anomaly labels'],
+  ['Heterogeneous frequencies and timestamp normalisation (3.1)', '15-min electricity, hourly gas, irregular local-time water normalised to UTC grids', '4.2.3', 'Implemented'],
+  ['Kafka ingestion with validation and cleansing (3.1)', 'Producer, consumer group, micro-batch stream processor', '4.3', 'Implemented'],
+  ['TimescaleDB/PostgreSQL partitioned tables (3.1)', 'Hypertables, continuous aggregate, compression, retention; measured on PostgreSQL 16', '4.4', 'Implemented; extension not benchmarked'],
+  ['Z-score, Isolation Forest, LSTM autoencoder (3.1)', 'All three, plus moving average, One-Class SVM, weighted ensemble and an offline STL comparator', '4.5', 'Implemented and extended'],
+  ['SHAP/LIME explainability (3.1)', 'TreeSHAP on every streamed alert, LIME and KernelSHAP on demand, plain-language narrative', '4.5.5', 'Implemented'],
+  ['Dashboard: live monitoring, history, explainable alerts (3.1)', 'Eight pages, including cross-utility, KPIs and user study', '4.6', 'Implemented'],
+  ['Precision, recall, F1, ROC-AUC, latency, throughput, resources (3.3)', 'Held-out test period, three seeds, steady and stress Kafka runs', '5.3–5.4, 6.1–6.3', 'Completed'],
+  ['SUS > 70, TAM, operator trust (3.3)', 'Study instrument and analysis built and tested', '6.4', 'Pending participants'],
+  ['Ethics (3.4)', 'No PII; consent; monitoring only; operator-mediated thresholds; explanations with audit trail', '4.4–4.6', 'Implemented'],
+  ['H1, H2, H3', 'Tested, tested, instrument ready', '6.3.3, 6.1, 6.4', 'H1 not supported; H2 supported; H3 pending'],
+], [2.6, 3.4, 1.2, 1.8], { numeric: false }));
 
 add(H2('4.1 System Architecture'));
 add(P(`The implemented architecture is shown in ${fig('arch')}. It keeps the five layers of the proposal — data sources, ingestion, storage, detection and visualisation — and adds the cross-cutting services that the proposal\'s Figure 1 identified (monitoring and logging, alert management, security, an API layer, and backup and recovery). ${tab('layers')} maps each layer to the technology chosen and the module that implements it.`));
@@ -204,7 +221,7 @@ add(H3('4.5.7 Alert management'));
 add(P('Flagged readings are grouped into alert events per meter (`alerts/rules.py`). To reduce single-reading noise, an event is raised only if it spans at least two consecutive flagged readings, or if at least three detectors agree on a single reading. Severity is **critical** if four or more detectors agree, if the ensemble percentile exceeds 0.995 or if the event is long; **warning** if two or more detectors agree or the event lasts four readings; otherwise **info**. Unacknowledged alerts escalate after 30 minutes, and anomalies in two or more utilities at the same site within two hours are linked as a cross-utility event.'));
 
 add(H2('4.6 Dashboard Implementation'));
-add(P(`The dashboard is a multi-page Streamlit application (${tab('pages')}). It runs in database mode, reading from PostgreSQL, when a database is configured, and otherwise in demo mode. In demo mode, the monitoring page replays the held-out test period: the scores and alerts are the trained models\' real outputs on unseen data, but the clock is simulated, which the page states.`));
+add(P(`The dashboard is a multi-page Streamlit application (${tab('pages')}). When a database is configured, the monitoring page reads live readings, alerts with their narratives, and pipeline latency from the PostgreSQL tables written by the Kafka consumer. The analysis pages (historical, cross-utility, alerts, explainable AI and user study) read the stored results of the evaluation run, so that every participant and marker sees the same test period. Without a database, every page runs in demo mode, and the monitoring page replays the held-out test period: the scores and alerts are the trained models\' real outputs on unseen data, but the clock is simulated, which the page states.`));
 add(table('pages', 'Dashboard pages and their purpose', ['Page', 'Content', 'Supports'], [
   ['Real-time monitoring', 'Play/replay clock, utility selection, KPIs (readings, alerts, critical, Kafka latency), per-utility charts with expected value and alert markers, alert feed with narratives', 'RQ1, RQ3'],
   ['Historical analysis', 'Any meter over the 60-day record with selectable detector flags, daily consumption and raw detector scores', 'RQ3'],
@@ -223,7 +240,7 @@ add(image(QA('alerts.png'), 600, 'Alert queue with severity, status, detector ag
 add(P(`${fig('xai')} shows the explainable-AI page for an alert: the narrative, the TreeSHAP attribution for the Isolation Forest, the LIME attribution for the ensemble, and the context chart with the votes of each detector. ${fig('study')} shows the start of the user-study flow, which collects informed consent before any task and stores responses only against a random participant code.`));
 add(image(QA('explain.png'), 600, 'Explainable AI page: narrative, SHAP and LIME attributions for one alert.', 'xai'));
 add(image(QA('study.png'), 560, 'User-study page: participant information and consent.', 'study'));
-add(P('A FastAPI service (`api/main.py`) exposes the same data to other systems: `/readings`, `/anomalies`, `/metrics`, `/health`, and two write endpoints, `/thresholds` and `/alerts/{id}/ack`, which require an API key and write to the audit tables.'));
+add(P('A FastAPI service (`api/main.py`) exposes the same data to other systems: `/readings`, `/anomalies`, `/metrics`, `/thresholds` and `/health`, plus two write endpoints, `/thresholds` and `/alerts/{id}/ack`, which require an API key and write to the audit tables.'));
 
 // ======================= 5 TESTING =======================
 add(H1('5. Testing'));
@@ -232,8 +249,8 @@ add(P(`Testing was planned at four levels (${tab('levels')}), from individual fu
 add(table('levels', 'Test levels', ['Level', 'What is tested', 'How', 'Evidence'], [
   ['Unit', 'Validation, cleaning, normalisation, features, scoring, alert rules, SUS scoring', 'pytest (18 tests)', 'Section 5.2, CI log'],
   ['Integration', 'Stream processor against batch path; API against stored data; schema on PostgreSQL', 'pytest; manual run', 'Section 5.2'],
-  ['System and performance', 'Producer → Kafka → consumer → database, steady and stress load', 'Scripted replay, latency log', 'Section 5.3, Table 14'],
-  ['Acceptance (interface)', 'Every dashboard page renders and interactive controls work', 'Scripted browser screenshots and manual checks', 'Section 5.2, Figures 3–7'],
+  ['System and performance', 'Producer → Kafka → consumer → database, steady and stress load', 'Scripted replay, latency log', 'Section 5.3, ' + tab('latency')],
+  ['Acceptance (interface)', 'Every dashboard page renders and interactive controls work', 'Scripted browser screenshots and manual checks', 'Section 5.2, Figures ' + figIds.mon + '–' + figIds.study],
   ['Model evaluation', 'Detection accuracy, H1, explanation quality', 'Held-out test period, 3 seeds', 'Section 5.4, Chapter 6'],
 ], [1.6, 3.2, 2.2, 2.0], { numeric: false }));
 
@@ -304,7 +321,7 @@ add(table('latency', 'End-to-end and processing latency (measured)', ['Measureme
   ['Stress run (backlog), producer → commit', '4,014', '11.5 s', '—', '20.6 s', '—', '21.5 s'],
 ], [3.8, 0.8, 0.8, 0.8, 0.8, 0.8, 0.8]));
 add(image(FIG('fig8_latency.png'), 600, 'Distribution of end-to-end latency in the steady run (left) and cumulative distributions for the steady and stress runs (right, log scale). Dashed red line: H2 target of 2.5 s.', 'lat'));
-add(P('Two observations qualify this result. First, the in-process latency (0.61 s) is close to the end-to-end figure (0.69 s), so most of the time is spent waiting for and scoring a micro-batch rather than in Kafka or the database; latency could be reduced further with smaller polls at the cost of throughput. Second, the stress run shows the limit: with a backlog, one consumer sustained about **180 readings per second**, and latency then reflects queueing (mean 11.5 s). At 15-minute reporting, 180 readings per second corresponds to roughly 160,000 meters per consumer process; because messages are keyed by meter, capacity can be increased by adding Kafka partitions and consumers, although this scale-out was not benchmarked. During the in-process benchmark the consumer used about 52% of the two CPUs and 820 MB of memory. Whole-engine batch scoring on the test period ran at about 48,000 readings per second, confirming that model inference is not the bottleneck.'));
+add(P('The plain-language narrative was added to the streaming alert path after these measurements. It was timed separately at about 4 µs per alert, so it does not change the results. Two further observations qualify the result. First, the in-process latency (0.61 s) is close to the end-to-end figure (0.69 s), so most of the time is spent waiting for and scoring a micro-batch rather than in Kafka or the database; latency could be reduced further with smaller polls at the cost of throughput. Second, the stress run shows the limit: with a backlog, one consumer sustained about **180 readings per second**, and latency then reflects queueing (mean 11.5 s). At 15-minute reporting, 180 readings per second corresponds to roughly 160,000 meters per consumer process; because messages are keyed by meter, capacity can be increased by adding Kafka partitions and consumers, although this scale-out was not benchmarked. During the in-process benchmark the consumer used about 52% of the two CPUs and 820 MB of memory. Whole-engine batch scoring on the test period ran at about 48,000 readings per second, confirming that model inference is not the bottleneck.'));
 
 add(H2('6.2 Anomaly Detection Results'));
 add(P(`${tab('main')} gives the main detection results on the test period for seed 42, and ${fig('f1auc')} compares F1 and ROC-AUC. The table follows the format planned in the proposal, with detection latency reported as two measured quantities: the median delay from anomaly onset to the first flag, and the marginal scoring cost per reading.`));
@@ -390,13 +407,30 @@ add(P('**H3 and usability (SUS, TAM) are not yet measured.** The study instrumen
 
 add(H2('6.5 Summary of Findings'));
 add(table('summary', 'Summary against research questions and hypotheses', ['Question', 'Finding', 'Evidence'], [
-  ['RQ1: scalable real-time architecture', 'A Kappa architecture with Kafka, a shared stream processor and time-series storage integrated three utilities at different frequencies through one code path', 'Sections 4.1–4.4; Tables 4, 14'],
-  ['RQ2: best balance', 'Weighted ensemble: highest ROC-AUC (0.946; 0.940 ± 0.008 over seeds) and event recall (88.6%), within latency budget, explainable per alert', 'Tables 15–19; Figures 8–14'],
-  ['RQ3: dashboard effectiveness', 'Dashboard complete; alerts debounced and explained; plausible explanations (78.6% top-1); operator study pending', 'Section 6.4; Tables 19, 20'],
-  ['H1: LSTM ≥ 15% higher temporal recall', 'Not supported: below Z-score at matched FPR in all seeds', 'Table 17; Figure 12'],
-  ['H2: mean alert latency < 2.5 s', 'Supported: 0.69 s mean, 1.56 s max, 100% under target', 'Table 14; Figure 13'],
+  ['RQ1: scalable real-time architecture', 'A Kappa architecture with Kafka, a shared stream processor and time-series storage integrated three utilities at different frequencies through one code path', 'Sections 4.1–4.4; ' + tab('ingest') + ', ' + tab('latency')],
+  ['RQ2: best balance', 'Weighted ensemble: highest ROC-AUC (0.946; 0.940 ± 0.008 over seeds) and event recall (88.6%), within latency budget, explainable per alert', 'Tables ' + tabIds.main + '–' + tabIds.xai + '; Figures ' + figIds.f1auc + '–' + figIds.cost],
+  ['RQ3: dashboard effectiveness', 'Dashboard complete; alerts debounced and explained; plausible explanations (78.6% top-1); operator study pending', 'Section 6.4; ' + tab('xai') + ', ' + tab('alerts')],
+  ['H1: LSTM ≥ 15% higher temporal recall', 'Not supported: below Z-score at matched FPR in all seeds', tab('h1') + '; ' + fig('h1')],
+  ['H2: mean alert latency < 2.5 s', 'Supported: 0.69 s mean, 1.56 s max, 100% under target', tab('latency') + '; ' + fig('lat')],
   ['H3: XAI raises trust ≥ 20%', 'Not yet tested (requires participants)', 'Section 6.4'],
 ], [2.4, 4.6, 2.0], { numeric: false }));
+add(P(`${tab('outcomes')} relates the results to the expected outcomes and contributions stated in Section 4 of the proposal.`));
+add(table('outcomes', 'Expected outcomes of the proposal and what was delivered', ['Outcome', 'Delivered', 'Evidence'], [
+  ['O1: validated five-layer architecture with documented performance', 'Delivered: implemented, tested (18 automated tests) and measured (latency, throughput, resources)', 'Ch. 4; Sections 5.2, 6.1'],
+  ['O2: empirical comparison of detection techniques across utility types', 'Delivered: six streaming methods and STL compared overall, per utility, per anomaly type, over three seeds', 'Sections 6.2–6.3'],
+  ['O3: evidence of XAI impact on trust and decision quality', 'Partly delivered: explanation plausibility and cost measured; trust effect pending the user study', 'Sections 6.3.5, 6.4'],
+  ['O4: deployment recommendations for UK multi-utility providers', 'Delivered: recommendations below, and deployment guide in the repository', 'Table ' + tabIds.deploy],
+], [3, 4, 2], { numeric: false }));
+add(P(`**Deployment recommendations (Outcome 4).** ${tab('deploy')} summarises the recommendations that follow from the results. The full guide, including container deployment and a zero-infrastructure dashboard option, is in `+'`docs/DEPLOYMENT.md`'+`.`));
+add(table('deploy', 'Deployment recommendations for a UK multi-utility operator', ['Area', 'Recommendation', 'Basis in results'], [
+  ['Architecture', 'Keep the Kappa design; scale by adding Kafka partitions and consumers keyed by meter', 'One consumer ≈ 180 readings/s (≈ 160,000 meters at 15-min reporting); Section 6.1'],
+  ['Detection', 'Deploy the weighted ensemble; keep the profile Z-score as the transparent fallback', 'Highest and most stable ROC-AUC and event recall; Sections 6.2–6.3'],
+  ['Explainability', 'TreeSHAP and narrative on every alert; LIME only on demand', '3.2 ms vs 36 ms per alert; Table ' + tabIds.xai],
+  ['Human oversight', 'Monitoring-only operation; operator-approved thresholds; audit every action', 'Ethics commitment; false-alarm rate in Table ' + tabIds.alerts],
+  ['Avoid', 'Serverless functions in the alert path', 'Cold-start latency risks the 2.5 s target (H2)'],
+  ['Regulation and data', 'Treat as part of an essential service under the NIS Regulations 2018 and the NCSC Cyber Assessment Framework; pseudonymise meter IDs; host in a UK region', 'Data protection and resilience duties of energy and water operators'],
+  ['Before roll-out', 'Re-run the evaluation on the operator\'s own labelled incidents, then pilot in shadow mode', 'Synthetic results rank methods but do not predict field precision; Section 6.5'],
+], [1.6, 4.2, 3.2], { numeric: false }));
 add(P('**Interpretation.** The platform demonstrates that heterogeneous electricity, gas and water streams can be processed in near-real time on very modest hardware: the latency target was met with a large margin, and inference cost was not the constraint — feature design and alert management were. The comparison shows that no single detector dominates: the profile Z-score is hard to beat on sustained deviations, tree- and kernel-based models are strongest on stuck meters, and the LSTM is precise but misses short events. Combining them gave the most reliable ranking and the most even coverage, which is the main practical recommendation for a UK multi-utility operator.'));
 add(P('**Threats to validity.** (1) The data are synthetic, and anomaly shapes and noise were designed, so absolute scores will not transfer to field data; the ranking of methods is the more transferable result, and the SGCC and London adapters allow it to be re-tested on real data. (2) The study used 30 meters; per-utility results for gas and water rest on a few hundred anomalous readings and 14 and 118 episodes respectively. (3) Latency was measured on a single broker with co-located services and without the TimescaleDB extension; network hops in a real deployment would add time, although the margin to the target is large. (4) The LSTM explanation gap remains: per-reading SHAP and LIME do not cover the window-based model. (5) H3 is untested until the user study is completed.'));
 
@@ -431,6 +465,19 @@ add(P('All results can be regenerated from the repository on a machine with Pyth
   '`python scripts/make_figures.py` — Figures 2 and 8–14',
   '`python -m pytest` — the 18 functional tests',
 ].forEach((t) => add(B(t)));
+
+add(H1('Appendix B: Key Code Excerpts'));
+add(P('The excerpts below are copied unchanged from the repository, to show how the central design decisions of Section 4.5 are implemented.'));
+const CODE = (title, file, src) => {
+  add(new Paragraph({ spacing: { before: 160, after: 60 }, keepNext: true, children: [new TextRun({ text: title + ' — ', bold: true, size: 20 }), new TextRun({ text: file, font: 'Consolas', size: 18 })] }));
+  src.replace(/\s+$/, '').split('\n').forEach((line, i, arr) => add(new Paragraph({
+    shading: { fill: 'F3F3F1', type: ShadingType.CLEAR }, spacing: { after: 0, line: 240 }, keepLines: true, keepNext: i < arr.length - 1,
+    children: [new TextRun({ text: line.replace(/ /g, '\u00A0') || ' ', font: 'Consolas', size: 15 })] })));
+  add(new Paragraph({ spacing: { after: 160 }, children: [] }));
+};
+CODE('B.1 Threshold calibration with alert budget (Section 4.5.4)', 'src/confluence/detection/base.py', "def calibrate_threshold(scores: np.ndarray, y: np.ndarray | None, mode: str = \"f1\",\n                        contamination: float = 0.03, max_alert_rate: float = 0.15) -> float:\n    \"\"\"Pick an alert threshold on the validation period.\n\n    ``f1``       maximise F1 against validation labels (semi-supervised calibration)\n    ``quantile`` flag the top ``contamination`` share of readings (fully unsupervised)\n\n    In both modes the threshold never flags more than ``max_alert_rate`` of\n    readings \u2014 an operational alert budget that stops a weak detector from\n    \"winning\" F1 by alerting on almost everything.\n    \"\"\"\n    ok = ~np.isnan(scores)\n    s = scores[ok]\n    floor = float(np.quantile(s, 1 - max_alert_rate))\n    if mode == \"quantile\" or y is None:\n        return max(float(np.quantile(s, 1 - contamination)), floor)\n    p, r, t = precision_recall_curve(y[ok].astype(int), s)\n    if not len(t):\n        return max(float(np.quantile(s, 0.97)), floor)\n    f1 = 2 * p[:-1] * r[:-1] / np.maximum(p[:-1] + r[:-1], 1e-12)\n    f1[t < floor] = -1\n");
+CODE('B.2 Weighted-voting ensemble (Section 4.5.4)', 'src/confluence/detection/engine.py', "    def _ensemble_score(um: UtilityModels, df: pd.DataFrame, raw: dict | None = None) -> np.ndarray:\n        acc = np.zeros(len(df)); wsum = np.zeros(len(df))\n        for name, det in um.detectors.items():\n            s = raw[name] if raw is not None else det.score(df)\n            p = um._pct(name, s)\n            ok = ~np.isnan(p)\n            acc[ok] += um.weights[name] * p[ok]; wsum[ok] += um.weights[name]\n        out = np.where(wsum > 0, acc / np.maximum(wsum, 1e-12), np.nan)\n        return np.where(df[\"scorable\"].values, out, np.nan)\n");
+CODE('B.3 Explanation of each streamed alert (Sections 4.3, 4.5.5)', 'src/confluence/ingestion/stream_processor.py', "            alert = bool(row[\"flag_ensemble\"])\n            shap_top, narr = [], \"\"\n            if alert and self.explainer is not None:\n                x = row[FEATURES].astype(float).fillna(0).values[None, :]\n                shap_top = self.explainer.top(self.explainer.shap_values(utility, x)[0])\n                narr = narrative(utility, n[\"meter_id\"], float(n[\"value\"]), UTILITIES[utility].unit, shap_top,\n                                 dict(zip(FEATURES, x[0])))\n");
 
 // ======================= DOCUMENT =======================
 const doc = new Document({

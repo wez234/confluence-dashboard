@@ -35,7 +35,7 @@ def _live_db_view(db):
         fig.add_scatter(x=al.ts, y=agg.reindex(al.ts).values, mode="markers", name="alert",
                         marker=dict(color=SEVCOLOR["critical"], size=7))
         st.plotly_chart(style(fig, 220), width="stretch", key=f"live-{u}")
-    alerts = db.query("SELECT id, ts, meter_id, utility, severity, ensemble_score, status FROM anomalies ORDER BY ts DESC LIMIT 20")
+    alerts = db.query("SELECT id, ts, meter_id, utility, severity, ensemble_score, status, explanation->>'narrative' AS narrative FROM anomalies ORDER BY ts DESC LIMIT 20")
     st.subheader("Latest alerts")
     st.dataframe(alerts, hide_index=True, width="stretch")
 
